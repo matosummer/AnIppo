@@ -7,7 +7,7 @@
   "permissions": [
     "webRequest", 
     "webRequestBlocking", 
-    "<all_urls>"
+    "http://*/*"
   ],
 
   "background": {

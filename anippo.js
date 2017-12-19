@@ -41,26 +41,29 @@ function CreateLayoutDoc(url) {
   return doc.documentElement.outerHTML
 }
 
-// TODO: faster Textdecoder
 function listener(details) {
   if(details.method !== "GET")
     return {}
 
-  if(details.type == "main_frame") {
+  // Block ads host
+  if(details.url.includes("cfs.uzone.id")) {
+    return { cancel:true }
+  }
 
-    // I don't know why link to or from youtube crashing the browser
-    // my guess is bug from firefox in filterResponseData
-    const ignoreSite = [
-      "youtu.be",
-      "youtube.com",
-    ]
+  return {}
+}
 
-    if(ignoreSite.find((i)=>details.url.includes(i)) != undefined)
-      return {}
-    
+browser.webRequest.onBeforeRequest.addListener(
+  listener,
+  {urls: ["http://*/*"], types: ["script"]},
+  ["blocking"]
+)
+
+function listenerInternetPositif(details) {
+  if(details.statusCode == 200) {
     let filter = browser.webRequest.filterResponseData(details.requestId)
     filter.ondata = event => {
-
+      let eventData = event.data;
       // Inet positif page kinda always same, and byte length is less than 5500
       if(event.data.byteLength >= 2000 && event.data.byteLength <= 5500) {
         let decoder = new TextDecoder("utf-8")
@@ -69,26 +72,17 @@ function listener(details) {
         if(str.includes(title)) {
           str = CreateLayoutDoc(details.url)
           let encoder = new TextEncoder()
-          filter.write(encoder.encode(str))
-          filter.disconnect()
-          return
+          eventData = encoder.encode(str);
         }
       }
-
-      filter.write(event.data)
+      filter.write(eventData)
       filter.disconnect()
     }
-  } else if(details.type == "script") {
-    // Block ads host
-    if(details.url.includes("cfs.uzone.id")) {
-      return { cancel:true }
-    }
   }
-  return {}
 }
 
-browser.webRequest.onBeforeRequest.addListener(
-  listener,
-  {urls: ["<all_urls>"], types: ["main_frame", "script"]},
-  ["blocking"]
-)
+browser.webRequest.onHeadersReceived.addListener(
+  listenerInternetPositif,
+  {urls: ["http://*/*"], types: ["main_frame"]},
+  ["blocking", "responseHeaders"]
+);
