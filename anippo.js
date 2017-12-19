@@ -72,7 +72,7 @@ function listenerInternetPositif(details) {
         if(str.includes(title)) {
           str = CreateLayoutDoc(details.url)
           let encoder = new TextEncoder()
-          eventData = encoder.encode(str);
+          eventData = encoder.encode(str)
         }
       }
       filter.write(eventData)
