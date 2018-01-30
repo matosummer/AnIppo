@@ -1,8 +1,8 @@
 function CreateLayoutDoc(url) {
   const doc = document.implementation.createHTMLDocument("NO >:(")
-  let main = doc.createElement("main");
+  let main = doc.createElement("main")
   let page = doc.createElement("p")
-  let br = doc.createElement("br");
+  let br = doc.createElement("br")
   page.innerHTML = "Internet positif berulah mau di redirect, use vpn ato coba cek https"
   let button = doc.createElement("button")
   button.style = `
@@ -67,8 +67,8 @@ function listenerInternetPositif(details) {
       // Inet positif page kinda always same, and byte length is less than 5500
       if(event.data.byteLength >= 2000 && event.data.byteLength <= 5500) {
         let decoder = new TextDecoder("utf-8")
-        let str = decoder.decode(event.data.slice(100, 500))
-        let title = "<title>Internet Positif</title>"
+        let str = decoder.decode(event.data.slice(1000, 2000))
+        let title = "window.location.replace(\"http://internetpositif.uzone.id"
         if(str.includes(title)) {
           str = CreateLayoutDoc(details.url)
           let encoder = new TextEncoder()
