@@ -60,16 +60,18 @@ browser.webRequest.onBeforeRequest.addListener(
 )
 
 function listenerInternetPositif(details) {
+  console.log(details.statusCode)
   if(details.statusCode == 200) {
     let filter = browser.webRequest.filterResponseData(details.requestId)
     filter.ondata = event => {
       let eventData = event.data;
-      // Inet positif page kinda always same, and byte length is less than 5500
-      if(event.data.byteLength >= 2000 && event.data.byteLength <= 5500) {
+      // Inet positif page kinda always same, and byte length is less than 4000
+      if(event.data.byteLength >= 800 && event.data.byteLength <= 4000) {
         let decoder = new TextDecoder("utf-8")
-        let str = decoder.decode(event.data.slice(1000, 2000))
+        let str = decoder.decode(event.data.slice(event.data.byteLength - 1500, event.data.byteLength))
         let title = "window.location.replace(\"http://internetpositif.uzone.id"
         if(str.includes(title)) {
+          console.log(str)
           str = CreateLayoutDoc(details.url)
           let encoder = new TextEncoder()
           eventData = encoder.encode(str)
