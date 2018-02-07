@@ -68,7 +68,8 @@ function listenerInternetPositif(details) {
       // Inet positif page kinda always same, and byte length is less than 4000
       if(event.data.byteLength >= 800 && event.data.byteLength <= 4000) {
         let decoder = new TextDecoder("utf-8")
-        let str = decoder.decode(event.data.slice(event.data.byteLength - 1500, event.data.byteLength))
+        // Sometimes the page get injected by ads so the byte length increased
+        let str = decoder.decode(event.data.slice(event.data.byteLength - 2100, event.data.byteLength))
         let title = "window.location.replace(\"http://internetpositif.uzone.id"
         if(str.includes(title)) {
           console.log(str)
