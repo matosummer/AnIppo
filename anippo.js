@@ -14,8 +14,8 @@ function CreateLayoutDoc(url) {
       color: white;
       font-size: 1.4em;`
   let textArea = doc.createElement("textarea")
-  textArea.textContent = url;
-  textArea.select();
+  textArea.textContent = url
+  textArea.select()
   button.innerHTML = "Copy Url"
   
   let hate = doc.createElement("p")
@@ -46,7 +46,10 @@ function listener(details) {
     return {}
 
   // Block ads host
-  if(details.url.includes("cfs.uzone.id")) {
+  if(
+    details.url.includes("cfs.uzone.id") ||
+    details.url.includes("notifa.info")
+  ) {
     return { cancel:true }
   }
 
@@ -60,11 +63,10 @@ browser.webRequest.onBeforeRequest.addListener(
 )
 
 function listenerInternetPositif(details) {
-  console.log(details.statusCode)
   if(details.statusCode == 200) {
     let filter = browser.webRequest.filterResponseData(details.requestId)
     filter.ondata = event => {
-      let eventData = event.data;
+      let eventData = event.data
       // Inet positif page kinda always same, and byte length is less than 4000
       if(event.data.byteLength >= 800 && event.data.byteLength <= 4000) {
         let decoder = new TextDecoder("utf-8")
@@ -72,7 +74,6 @@ function listenerInternetPositif(details) {
         let str = decoder.decode(event.data.slice(event.data.byteLength - 2100, event.data.byteLength))
         let title = "window.location.replace(\"http://internetpositif.uzone.id"
         if(str.includes(title)) {
-          console.log(str)
           str = CreateLayoutDoc(details.url)
           let encoder = new TextEncoder()
           eventData = encoder.encode(str)
@@ -88,4 +89,4 @@ browser.webRequest.onHeadersReceived.addListener(
   listenerInternetPositif,
   {urls: ["http://*/*"], types: ["main_frame"]},
   ["blocking", "responseHeaders"]
-);
+)
