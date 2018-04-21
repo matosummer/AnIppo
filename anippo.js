@@ -96,16 +96,18 @@ function listenerInternetPositif(details) {
         let str = decoder.decode(event.data.slice(0, 2000))
         let domParser = new DOMParser()
         let doc = domParser.parseFromString(str, "text/html")
-        let metaDesc = doc.head.querySelector("[name=description]").content
-        if(
+        let metaDesc = doc.head.querySelector("[name=description]")
+        if(doc && metaDesc) {
+          if(
             doc.title === "Internet Positif" &&
-            metaDesc === "Internet Positif"
+            metaDesc.content === "Internet Positif"
           ) 
-        {
-            str = CreateLayoutDoc(details.url)
-            let encoder = new TextEncoder()
-            eventData = encoder.encode(str)
-            inetPositip = true
+          {
+              str = CreateLayoutDoc(details.url)
+              let encoder = new TextEncoder()
+              eventData = encoder.encode(str)
+              inetPositip = true
+          }
         }
       }
 
