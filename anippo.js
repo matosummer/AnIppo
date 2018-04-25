@@ -14,6 +14,7 @@ function CreateLayoutDoc(url) {
   color: white;
   font-size: 1.4em;}`
   let style = doc.createElement('style')
+  style.setAttribute('type', 'text/css')
   style.appendChild(doc.createTextNode(cssStyle))
   let button = doc.createElement("button")
   button.className = 'btn'
@@ -23,6 +24,7 @@ function CreateLayoutDoc(url) {
   textArea.select()
   button.innerHTML = "Copy Url"
   let buttonRefreshHttps = button.cloneNode()
+  buttonRefreshHttps.className = 'btn'
   buttonRefreshHttps.innerHTML = "Try HTTPS"
   buttonRefreshHttps.id = "btn_refreshhttps"
 
@@ -91,16 +93,16 @@ function listenerInternetPositif(details) {
     filter.ondata = event => {
       let eventData = event.data
       // check bytelength of internetpositif page
-      if(event.data.byteLength >= 20000 && event.data.byteLength <= 80000) {
+      if(event.data.byteLength >= 1000 && event.data.byteLength <= 3800) {
         let decoder = new TextDecoder("utf-8")
-        let str = decoder.decode(event.data.slice(0, 2000))
+        let str = decoder.decode(event.data)
         let domParser = new DOMParser()
         let doc = domParser.parseFromString(str, "text/html")
-        let metaDesc = doc.head.querySelector("[name=description]")
-        if(doc && metaDesc) {
+        let objUzone = doc.body.querySelector("#obj")
+        if(doc && objUzone) {
           if(
-            doc.title === "Internet Positif" &&
-            metaDesc.content === "Internet Positif"
+            doc.title === "Internet Positive" &&
+            objUzone.data == "http://block.uzone.id/"
           ) 
           {
               str = CreateLayoutDoc(details.url)
