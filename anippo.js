@@ -49,7 +49,7 @@ function CreateLayoutDoc(url) {
       })
     })
     function TryHttps() {
-      let _url = "` + url + `"
+      let _url = document.querySelector("textArea").innerHTML
       location.href = "https:" + _url.substring(window.location.protocol.length);
     }
   //]]> `
