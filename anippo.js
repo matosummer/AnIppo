@@ -49,7 +49,8 @@ function CreateLayoutDoc(url) {
       })
     })
     function TryHttps() {
-      location.protocol = "https:";
+      let _url = "` + url + `"
+      location.href = "https:" + _url.substring(window.location.protocol.length);
     }
   //]]> `
   doc.head.appendChild(style)
@@ -86,46 +87,25 @@ browser.webRequest.onBeforeRequest.addListener(
   ["blocking"]
 )
 
+let requestUrl = null
+
 function listenerInternetPositif(details) {
   if(details.statusCode == 200) {
-    let filter = browser.webRequest.filterResponseData(details.requestId)
-    let inetPositip = false
-    filter.ondata = event => {
-      let eventData = event.data
-      // check bytelength of internetpositif page
-      if(event.data.byteLength >= 1000 && event.data.byteLength <= 3800) {
-        let decoder = new TextDecoder("utf-8")
-        let str = decoder.decode(event.data)
-        let domParser = new DOMParser()
-        let doc = domParser.parseFromString(str, "text/html")
-        let objUzone = doc.body.querySelector("#obj")
-        if(doc && objUzone) {
-          if(
-            doc.title === "Internet Positive" &&
-            objUzone.data == "http://block.uzone.id/"
-          ) 
-          {
-              str = CreateLayoutDoc(details.url)
-              let encoder = new TextEncoder()
-              eventData = encoder.encode(str)
-              inetPositip = true
-          }
-        }
-      }
-
-      filter.write(eventData)
-
-      if(inetPositip)
+    if(details.url === "http://internetpositif.uzone.id/") {
+      let filter = browser.webRequest.filterResponseData(details.requestId)
+      filter.ondata = event => {
+        str = CreateLayoutDoc(details.originUrl)
+        let encoder = new TextEncoder()
+        let eventData = encoder.encode(str)
+        filter.write(eventData)
         filter.close()
-      else
-        filter.disconnect()
-      
+      }
     }
   }
 }
 
 browser.webRequest.onHeadersReceived.addListener(
   listenerInternetPositif,
-  {urls: ["http://*/*"], types: ["main_frame"]},
+  {urls: ["http://*/*"]},
   ["blocking", "responseHeaders"]
 )
