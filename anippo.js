@@ -1,3 +1,5 @@
+const inetpositipUrl = "http://internetpositif.uzone.id/"
+
 function CreateLayoutDoc(url) {
   const doc = document.implementation.createHTMLDocument("NO >:(")
   let main = doc.createElement("main")
@@ -81,20 +83,30 @@ function listener(details) {
   return {}
 }
 
+let requestUrl = null
+
+function listenerOnbeforeSendHeader(details) {
+    if(details.url !== inetpositipUrl)
+      requestUrl = details.url
+}
+
+browser.webRequest.onBeforeSendHeaders.addListener(
+  listenerOnbeforeSendHeader,
+  {urls: ["http://*/*"]},
+  ["blocking","requestHeaders"]
+)
 browser.webRequest.onBeforeRequest.addListener(
   listener,
   {urls: ["http://*/*"], types: ["script"]},
   ["blocking"]
 )
 
-let requestUrl = null
-
 function listenerInternetPositif(details) {
   if(details.statusCode == 200) {
-    if(details.url === "http://internetpositif.uzone.id/") {
+    if(details.url === inetpositipUrl) {
       let filter = browser.webRequest.filterResponseData(details.requestId)
       filter.ondata = event => {
-        str = CreateLayoutDoc(details.originUrl)
+        str = CreateLayoutDoc(requestUrl)
         let encoder = new TextEncoder()
         let eventData = encoder.encode(str)
         filter.write(eventData)
